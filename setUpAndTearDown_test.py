@@ -1,3 +1,8 @@
+# Purpose of setup/teardown
+# Setup → Prepare environment
+# Teardown → Clean environment
+
+
 # module-level setup/teardown
 def setup_module(module):
     print('setup module')
