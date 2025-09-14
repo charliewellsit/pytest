@@ -13,4 +13,4 @@ def test2():
     print('test2')
     assert True
 
-
+# You can do '@pytest.fixture(autouse=True)' to have setup run at all tests.
