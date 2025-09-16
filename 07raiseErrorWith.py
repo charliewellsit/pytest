@@ -11,7 +11,7 @@ def test_exception():
         raisesValueException()
 
 """
-raises(ValueError) is a context manager provided by pytest.
+with raises(ValueError) is a context manager provided by pytest.
 
 It expects the code inside the block to raise ValueError.
 
