@@ -31,6 +31,11 @@ def test2():
     print("Executing test2!")
     assert True
 
+@pytest.mark.skip # this function will be skipped
+def test3():
+    print("Executing test3!")
+    assert False
+
 # Another module-level fixture (just for demonstration)
 @pytest.fixture(scope="module", autouse=True)
 def setupModule2():
