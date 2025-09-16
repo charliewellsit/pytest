@@ -42,64 +42,65 @@ Mock frameworks
     
 """
 
-from pytest import raises
-from unittest.mock import MagicMock
-import os
-import pytest
+# tests/read_file_test.py
 
+# 1) Imports
+from pytest import raises            # context manager to assert exceptions in tests
+from unittest.mock import MagicMock  # create fake objects for testing
+import os                            # to check file existence
+import pytest                        # pytest itself (not strictly required here but common)
 
-# Function we want to test
+# 2) Code under test
 def readFromFile(filename):
-    # Check if file exists
+    # Check if the file exists first; if not, raise an error.
     if not os.path.exists(filename):
-        raise Exception("Bad File")  # Raise exception if file not found
+        raise Exception("Bad File")
 
-    # If file exists, open it and read one line
+    # Open the file for reading and read one line.
     infile = open(filename, "r")
     line = infile.readline()
+    infile.close()   # close the file (good practice)
     return line
 
-
-# -------- Fixtures (for mocking) --------
-
-# This fixture replaces the built-in open() with a mock object
+# 3) Fixture to mock built-in open() so tests don't touch the real filesystem
 @pytest.fixture()
 def mock_open(monkeypatch):
-    # Create a fake file object
+    # Create a fake file-like object
     mock_file = MagicMock()
-    mock_file.readline = MagicMock(return_value="test line")  # Fake file will return "test line"
+    # When someone calls mock_file.readline(), return this string
+    mock_file.readline = MagicMock(return_value="test line")
 
-    # Replace open() with this fake file
+    # Create a fake open() that returns our fake file object
     mock_open = MagicMock(return_value=mock_file)
+
+    # Replace builtins.open with our fake open for the duration of the test
     monkeypatch.setattr("builtins.open", mock_open)
 
+    # Return the fake open so tests can make assertions on how it was called
     return mock_open
 
-
-# -------- Tests --------
-
-# Test: if the file exists, we should read "test line"
+# 4) Test: file exists -> read one line and return it
 def test_returnsCorrectString(mock_open, monkeypatch):
-    # Mock os.path.exists to always return True
+    # Make os.path.exists(...) return True (pretend the file exists)
     mock_exists = MagicMock(return_value=True)
     monkeypatch.setattr("os.path.exists", mock_exists)
 
-    # Call function under test
+    # Call the function under test
     result = readFromFile("blah")
 
-    # Verify open() was called with correct arguments
+    # Verify open() was called with the expected args
     mock_open.assert_called_once_with("blah", "r")
 
-    # Verify the return value is as expected
+    # And verify the function returned the mocked line
     assert result == "test line"
 
-
-# Test: if the file does not exist, an Exception should be raised
+# 5) Test: file does not exist -> function should raise Exception
 def test_throwsExceptionWithBadFile(mock_open, monkeypatch):
-    # Mock os.path.exists to always return False
+    # Make os.path.exists(...) return False (pretend the file is missing)
     mock_exists = MagicMock(return_value=False)
     monkeypatch.setattr("os.path.exists", mock_exists)
 
-    # Check that our function raises an Exception
+    # Expect Exception to be raised when calling the function
     with raises(Exception):
         readFromFile("blah")
+
