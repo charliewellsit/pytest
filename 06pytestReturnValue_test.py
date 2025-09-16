@@ -4,26 +4,6 @@ With params=[...], pytest runs the test once for each value.
 """
 import pytest
 
-# Fixture with params → runs test once per value
-@pytest.fixture(params=[1, 2])
-def setupData(request):
-    return request.param
-
-def test1(setupData):
-    print(f"Running test with: {setupData}")
-    assert setupData in [1, 2]
-
-"""
-output:
-test_example.py::test1[1] 
-Running test with: 1
-PASSED
-test_example.py::test1[2] 
-Running test with: 2
-PASSED
-"""
-
-
 @pytest.fixture(params=[1,2,3])
 def setup (request):
     retVal = request.param

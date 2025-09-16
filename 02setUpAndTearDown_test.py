@@ -27,7 +27,6 @@ def teardown_function(function):
     else:
         print('\nteardown unknown function')
 
-# plain test functions
 def test1():
     print('executing test1')
     assert True
